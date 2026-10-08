@@ -23,7 +23,7 @@ import requests
 from dotenv import load_dotenv
 from google.oauth2.service_account import Credentials
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.constants import ParseMode
+from telegram.constants import KeyboardButtonStyle, ParseMode
 from telegram.error import BadRequest
 from telegram.ext import Application, CallbackQueryHandler, CommandHandler, ContextTypes
 from zoneinfo import ZoneInfo
@@ -67,13 +67,15 @@ def _menu_keyboard(now: datetime.datetime):
     # Short labels in a 2x2 grid: four full-width rows with long captions
     # looked like a form, not a dashboard.
     return InlineKeyboardMarkup([
+        # Telegram only offers three button colours; each is the closest to
+        # the service's real logo: Gmail red, MegaFon green, Avito blue.
         [
-            InlineKeyboardButton("📧 Почта", url=f"https://t.me/{DIGEST_BOT_USERNAME}"),
-            InlineKeyboardButton("📍 Визиты", url=f"https://t.me/{VISIT_BOT_USERNAME}"),
+            InlineKeyboardButton("📨 Почта", url=f"https://t.me/{DIGEST_BOT_USERNAME}", style=KeyboardButtonStyle.RED),
+            InlineKeyboardButton("📋 Визиты", url=f"https://t.me/{VISIT_BOT_USERNAME}", style=KeyboardButtonStyle.GREEN),
         ],
         [
-            InlineKeyboardButton("🛒 Авито", url=f"https://t.me/{AVITO_BOT_USERNAME}"),
-            InlineKeyboardButton("✈️ Билеты", url=f"https://t.me/{FLIGHTS_BOT_USERNAME}"),
+            InlineKeyboardButton("🏪 Авито", url=f"https://t.me/{AVITO_BOT_USERNAME}", style=KeyboardButtonStyle.BLUE),
+            InlineKeyboardButton("🎫 Билеты", url=f"https://t.me/{FLIGHTS_BOT_USERNAME}", style=KeyboardButtonStyle.BLUE),
         ],
         [InlineKeyboardButton(f"↻ Обновить · {now:%H:%M}", callback_data="status")],
     ])
@@ -167,9 +169,9 @@ def _render_status(now: datetime.datetime) -> str:
     return (
         "<b>ZURAB WORKSPACE</b>\n"
         f"<i>{_greeting(now)} · {_date_ru(now)}</i>\n\n"
-        f"<blockquote>📧 <b>Главное с почты</b>\n{_fetch_digest_status()}</blockquote>\n"
-        f"<blockquote>📍 <b>Визиты КМВ</b>\n{_fetch_visit_status()}</blockquote>\n"
-        "<blockquote>🛒 <b>Авито</b>  ·  ✈️ <b>Билеты</b>\n"
+        f"<blockquote>📨 <b>Главное с почты</b>\n{_fetch_digest_status()}</blockquote>\n"
+        f"<blockquote>📋 <b>Визиты КМВ</b>\n{_fetch_visit_status()}</blockquote>\n"
+        "<blockquote>🏪 <b>Авито</b>  ·  🎫 <b>Билеты</b>\n"
         "Сами пишут, когда есть что показать</blockquote>"
     )
 
