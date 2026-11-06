@@ -78,7 +78,7 @@ def _menu_keyboard(now: datetime.datetime):
             InlineKeyboardButton("🏪 Авито", url=f"https://t.me/{AVITO_BOT_USERNAME}", style=KeyboardButtonStyle.BLUE),
             InlineKeyboardButton("🎫 Билеты", url=f"https://t.me/{FLIGHTS_BOT_USERNAME}", style=KeyboardButtonStyle.BLUE),
         ],
-        [InlineKeyboardButton("📊 Номи Отчеты", url=f"https://t.me/{NOMI_BOT_USERNAME}")],
+        [InlineKeyboardButton("🟣 Номи Отчеты", url=f"https://t.me/{NOMI_BOT_USERNAME}", style=KeyboardButtonStyle.BLUE)],
         [InlineKeyboardButton(f"↻ Обновить · {now:%H:%M}", callback_data="status")],
     ])
 
@@ -173,7 +173,7 @@ def _render_status(now: datetime.datetime) -> str:
         f"<i>{_greeting(now)} · {_date_ru(now)}</i>\n\n"
         f"<blockquote>📨 <b>Главное с почты</b>\n{_fetch_digest_status()}</blockquote>\n"
         f"<blockquote>📋 <b>Визиты КМВ</b>\n{_fetch_visit_status()}</blockquote>\n"
-        "<blockquote>🏪 <b>Авито</b>  ·  🎫 <b>Билеты</b>  ·  📊 <b>Номи</b>\n"
+        "<blockquote>🏪 <b>Авито</b>  ·  🎫 <b>Билеты</b>  ·  🟣 <b>Номи</b>\n"
         "Сами пишут, когда есть что показать</blockquote>"
     )
 
