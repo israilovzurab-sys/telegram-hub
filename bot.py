@@ -47,6 +47,7 @@ DIGEST_BOT_USERNAME = "workmtsmeg_bot"
 VISIT_BOT_USERNAME = "megafonkmvbot"
 AVITO_BOT_USERNAME = "Avitozurab_bot"
 FLIGHTS_BOT_USERNAME = "TRIPZUbot"
+NOMI_BOT_USERNAME = "nomiweek_bot"
 
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = "israilovzurab-sys/gmail-telegram-agent"
@@ -77,6 +78,7 @@ def _menu_keyboard(now: datetime.datetime):
             InlineKeyboardButton("🏪 Авито", url=f"https://t.me/{AVITO_BOT_USERNAME}", style=KeyboardButtonStyle.BLUE),
             InlineKeyboardButton("🎫 Билеты", url=f"https://t.me/{FLIGHTS_BOT_USERNAME}", style=KeyboardButtonStyle.BLUE),
         ],
+        [InlineKeyboardButton("📊 Номи Отчеты", url=f"https://t.me/{NOMI_BOT_USERNAME}")],
         [InlineKeyboardButton(f"↻ Обновить · {now:%H:%M}", callback_data="status")],
     ])
 
@@ -171,7 +173,7 @@ def _render_status(now: datetime.datetime) -> str:
         f"<i>{_greeting(now)} · {_date_ru(now)}</i>\n\n"
         f"<blockquote>📨 <b>Главное с почты</b>\n{_fetch_digest_status()}</blockquote>\n"
         f"<blockquote>📋 <b>Визиты КМВ</b>\n{_fetch_visit_status()}</blockquote>\n"
-        "<blockquote>🏪 <b>Авито</b>  ·  🎫 <b>Билеты</b>\n"
+        "<blockquote>🏪 <b>Авито</b>  ·  🎫 <b>Билеты</b>  ·  📊 <b>Номи</b>\n"
         "Сами пишут, когда есть что показать</blockquote>"
     )
 
@@ -207,7 +209,10 @@ async def on_status_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not _is_allowed(update):
         await query.answer()
         return
-    await query.answer("Обновляю…")
+    try:
+        await query.answer("Обновляю…")
+    except BadRequest:
+        pass  # button was pressed while the hub was between runs: the query is stale, but refreshing still works
     await _send_status(query.message, edit=True)
 
 

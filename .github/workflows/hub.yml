@@ -1,7 +1,7 @@
 name: hub
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 concurrency:
   group: hub
@@ -9,7 +9,9 @@ concurrency:
 jobs:
   poll:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 355
+    permissions:
+      actions: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -19,10 +21,16 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python bot.py
         env:
-          HUB_RUN_SECONDS: "270"
+          HUB_RUN_SECONDS: "20400"
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           ALLOWED_USER_IDS: ${{ secrets.ALLOWED_USER_IDS }}
           GITHUB_TOKEN: ${{ secrets.HUB_GH_TOKEN }}
           GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
           SHEET_NAME: ${{ secrets.SHEET_NAME }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      # GitHub's cron fires only every few hours on idle repos, so the job
+      # hands over to the next run itself instead of relying on the schedule.
+      - if: always()
+        run: gh workflow run hub.yml --repo "$GITHUB_REPOSITORY"
+        env:
+          GH_TOKEN: ${{ github.token }}
